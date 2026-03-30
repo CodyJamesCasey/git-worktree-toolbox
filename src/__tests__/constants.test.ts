@@ -85,6 +85,8 @@ describe("getGlobalConfig", () => {
 
     const config = getGlobalConfig();
 
+    // Note: The function doesn't expand tilde - that's handled by the shell
+    // We just verify it passes through correctly
     expect(config.baseWorktreesPath).toBe("~/custom-worktrees");
   });
 
