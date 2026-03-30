@@ -99,6 +99,10 @@ describe("getGlobalConfig", () => {
     expect(config.baseWorktreesPath).toBe("/custom/path");
     expect(config.projectDirectories).toEqual(["/proj1", "/proj2"]);
   });
+});
+
+describe("resolveConfiguredPath", () => {
+  const homeDir = os.homedir();
 
   it("should resolve tilde-prefixed configured paths", () => {
     expect(resolveConfiguredPath("~/custom-worktrees")).toBe(
