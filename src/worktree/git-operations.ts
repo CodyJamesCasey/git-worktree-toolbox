@@ -121,7 +121,10 @@ export async function createWorkTree(
       );
       workTreePath = path.join(basePath, name);
     } else {
-      workTreePath = path.resolve(`../worktrees/${name}`);
+      // Anchor next to the repo root (parentDir/worktrees/name), not process.cwd().
+      // MCP and other hosts often start the server with an unrelated cwd; the CLI
+      // happened to work because users usually run gwtree from the repository.
+      workTreePath = path.join(path.dirname(currentDir), "worktrees", name);
     }
   }
   const gitOptions = gitRepoPath ? { cwd: gitRepoPath } : {};

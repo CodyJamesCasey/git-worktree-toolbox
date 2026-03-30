@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import * as path from "path";
 
 const mockExecAsync = vi.hoisted(() => vi.fn());
 
@@ -178,6 +179,37 @@ describe("Work Trees", () => {
           expect(result.branch).toBe("test");
           expect(result.id).toBe("test-uuid-123");
           expect(result.path).toContain("test-worktree");
+        });
+
+        it("resolves default worktree path from repo root, not process.cwd()", async () => {
+          const { getGitRepositoryPath } = await import("../tools/utils");
+          vi.mocked(getGitRepositoryPath).mockResolvedValue(
+            "/home/user/projects/myapp",
+          );
+          const cwdSpy = vi
+            .spyOn(process, "cwd")
+            .mockReturnValue("/unrelated/cwd");
+
+          mockExecAsync
+            .mockResolvedValueOnce({ stdout: "", stderr: "" })
+            .mockResolvedValueOnce({ stdout: "commit-hash", stderr: "" })
+            .mockResolvedValueOnce({ stdout: "", stderr: "" })
+            .mockResolvedValueOnce({ stdout: "", stderr: "" })
+            .mockResolvedValueOnce({ stdout: "success", stderr: "" });
+
+          const result = await createWorkTree(
+            "my-feature",
+            "test",
+            undefined,
+            "/home/user/projects/myapp",
+          );
+
+          expect(result.path).toBe(
+            path.join("/home/user/projects", "worktrees", "my-feature"),
+          );
+
+          cwdSpy.mockRestore();
+          vi.mocked(getGitRepositoryPath).mockResolvedValue("/test/repo");
         });
 
         it("should create a work tree with custom path", async () => {
