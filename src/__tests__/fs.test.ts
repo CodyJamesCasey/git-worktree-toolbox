@@ -58,14 +58,14 @@ describe("ensureWorktreesReadme", () => {
     const content = fs.readFileSync(readmePath, "utf8");
     expect(content).toContain("gwtree create");
     expect(content).toContain("gwtree list");
-    expect(content).toContain("gwtree remove");
+    expect(content).toContain("gwtree archive");
   });
 
   it("should include directory structure example", () => {
     ensureWorktreesReadme(testDir);
 
     const content = fs.readFileSync(readmePath, "utf8");
-    expect(content).toContain("~/.gwtree/");
+    expect(content).toContain("<base-worktrees-path>/");
     expect(content).toContain("my-project");
   });
 });

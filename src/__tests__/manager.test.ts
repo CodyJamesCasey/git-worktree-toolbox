@@ -79,6 +79,7 @@ describe("WorktreeManager", () => {
         expect.any(String),
         undefined,
         "/custom/repo",
+        "/base/worktrees",
       );
     });
 
@@ -107,6 +108,7 @@ describe("WorktreeManager", () => {
         customBranchName,
         undefined,
         undefined,
+        "/base/worktrees",
       );
 
       // Metadata should also use the custom branch name
@@ -130,6 +132,7 @@ describe("WorktreeManager", () => {
         expect.stringMatching(/^implement-new-/i),
         undefined,
         undefined,
+        "/base/worktrees",
       );
     });
   });

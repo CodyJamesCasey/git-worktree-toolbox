@@ -3,7 +3,10 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { getGlobalConfig } from "@/src/utils/constants";
+import {
+  getGlobalConfig,
+  resolveConfiguredPath,
+} from "@/src/utils/constants";
 import * as path from "path";
 import * as os from "os";
 
@@ -25,7 +28,9 @@ describe("getGlobalConfig", () => {
   it("should return default baseWorktreesPath when no env var is set", () => {
     const config = getGlobalConfig();
 
-    expect(config.baseWorktreesPath).toBe(path.join(homeDir, ".gwtree"));
+    expect(config.baseWorktreesPath).toBe(
+      path.join(homeDir, ".gwtree", "worktrees"),
+    );
   });
 
   it("should return custom baseWorktreesPath from env var", () => {
@@ -80,8 +85,6 @@ describe("getGlobalConfig", () => {
 
     const config = getGlobalConfig();
 
-    // Note: The function doesn't expand tilde - that's handled by the shell
-    // We just verify it passes through correctly
     expect(config.baseWorktreesPath).toBe("~/custom-worktrees");
   });
 
@@ -93,5 +96,17 @@ describe("getGlobalConfig", () => {
 
     expect(config.baseWorktreesPath).toBe("/custom/path");
     expect(config.projectDirectories).toEqual(["/proj1", "/proj2"]);
+  });
+
+  it("should resolve tilde-prefixed configured paths", () => {
+    expect(resolveConfiguredPath("~/custom-worktrees")).toBe(
+      path.join(homeDir, "custom-worktrees"),
+    );
+  });
+
+  it("should resolve relative configured paths to absolute paths", () => {
+    expect(resolveConfiguredPath("relative/worktrees")).toBe(
+      path.resolve("relative/worktrees"),
+    );
   });
 });
