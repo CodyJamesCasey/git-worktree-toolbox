@@ -137,23 +137,23 @@ export function ensureWorktreesReadme(worktreesDir: string): void {
     return;
   }
 
-  const content = `# Git Worktree Toolbox - Metadata Directory
+  const content = `# Git Worktree Toolbox - Worktrees Directory
 
-This directory houses **metadata** created by [git-worktree-toolbox](https://github.com/ben-rogerson/git-worktree-toolbox).
+This directory houses git worktrees created by [git-worktree-toolbox](https://github.com/ben-rogerson/git-worktree-toolbox).
 
 ## What's This Folder For?
 
 When you create a worktree using \`gwtree\`, it gets organized here by task:
 
 \`\`\`
-~/.gwtree/
+<base-worktrees-path>/
 └── my-project/
     ├── feature-auth/
     ├── bugfix-login/
     └── refactor-api/
 \`\`\`
 
-Each subdirectory is a fully functional git workspace with its own branch, letting you jump between tasks instantly.
+Each repository gets its own folder, and each subdirectory inside that folder is a fully functional git workspace with its own branch.
 
 ## Usage
 
@@ -169,17 +169,17 @@ gwtree list
 
 Switch to a worktree:
 \`\`\`bash
-gwtree open my-feature
+gwtree go my-feature
 \`\`\`
 
 Remove a worktree when done:
 \`\`\`bash
-gwtree remove my-feature
+gwtree archive my-feature
 \`\`\`
 
 ---
 
-*This file was automatically generated. Safe to delete - it'll regenerate on next worktree creation or when your run the doctor tool.*
+*This file was automatically generated. Safe to delete - it'll regenerate on next worktree creation or when you run the doctor tool.*
 `;
 
   try {

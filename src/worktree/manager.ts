@@ -21,6 +21,7 @@ import {
   WorktreeMetadata,
 } from "@/src/worktree/types";
 import { ensureWorktreeHasMetadata } from "@/src/tools/worktree-lifecycle";
+import { getGlobalConfig } from "@/src/utils/constants";
 
 export interface WorktreeManagerConfig {
   base_worktrees_path?: string;
@@ -32,7 +33,8 @@ export class WorktreeManager {
   public projectDirectories?: string[];
 
   constructor(config: WorktreeManagerConfig) {
-    this.baseWorktreesPath = config.base_worktrees_path || "../worktrees";
+    this.baseWorktreesPath =
+      config.base_worktrees_path || getGlobalConfig().baseWorktreesPath;
     this.projectDirectories = config.project_directories;
   }
 
@@ -53,6 +55,7 @@ export class WorktreeManager {
         branchName,
         undefined, // customPath
         options.git_repo_path,
+        this.baseWorktreesPath,
       );
 
       // Step 2: Create worktree metadata

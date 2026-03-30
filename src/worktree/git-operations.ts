@@ -27,6 +27,7 @@ import {
 import { ensureDirectory } from "@/src/utils/fs";
 import { assertGitRepoPath, getGitRepositoryPath } from "@/src/tools/utils";
 import { WorkTree, WorkTreeError } from "@/src/worktree/types";
+import { getGlobalConfig, resolveConfiguredPath } from "@/src/utils/constants";
 
 /**
  * Create a WorkTree error with a specific code
@@ -69,6 +70,7 @@ export async function createWorkTree(
   branch: string,
   customPath?: string,
   gitRepoPath?: string,
+  baseWorktreesPath?: string,
 ): Promise<WorkTree> {
   // Validate inputs
   if (!name || name.trim() === "") {
@@ -106,23 +108,20 @@ export async function createWorkTree(
   if (customPath) {
     workTreePath = customPath;
   } else {
-    const currentDir = await getGitRepositoryPath(gitRepoPath);
-    if (!currentDir) {
+    const repoPath = await getGitRepositoryPath(gitRepoPath);
+    if (!repoPath) {
       throw createWorkTreeError(
         "No git repository found in current directory or parent directories",
         "INVALID_OPERATION",
       );
     }
-    if (currentDir.includes("/worktrees/")) {
-      const worktreesIndex = currentDir.indexOf("/worktrees/");
-      const basePath = currentDir.substring(
-        0,
-        worktreesIndex + "/worktrees".length,
-      );
-      workTreePath = path.join(basePath, name);
-    } else {
-      workTreePath = path.resolve(`../worktrees/${name}`);
-    }
+
+    const configuredBasePath =
+      baseWorktreesPath || getGlobalConfig().baseWorktreesPath;
+    const resolvedBasePath = resolveConfiguredPath(configuredBasePath);
+    const repoName = path.basename(repoPath);
+
+    workTreePath = path.join(resolvedBasePath, repoName, name);
   }
   const gitOptions = gitRepoPath ? { cwd: gitRepoPath } : {};
 

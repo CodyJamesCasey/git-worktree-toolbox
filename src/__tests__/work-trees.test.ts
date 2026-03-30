@@ -25,6 +25,8 @@ import {
 } from "../worktree/git-operations";
 import type { WorkTree } from "../worktree/types";
 import * as fs from "fs/promises";
+import * as os from "os";
+import * as path from "path";
 
 vi.mock("fs/promises");
 vi.mock("fs");
@@ -177,7 +179,15 @@ describe("Work Trees", () => {
           expect(result.name).toBe("test-worktree");
           expect(result.branch).toBe("test");
           expect(result.id).toBe("test-uuid-123");
-          expect(result.path).toContain("test-worktree");
+          expect(result.path).toBe(
+            path.join(
+              os.homedir(),
+              ".gwtree",
+              "worktrees",
+              "repo",
+              "test-worktree",
+            ),
+          );
         });
 
         it("should create a work tree with custom path", async () => {
@@ -192,6 +202,25 @@ describe("Work Trees", () => {
 
           const result = await createWorkTree("test", "main", customPath);
           expect(result.path).toBe(customPath);
+        });
+
+        it("should create worktrees under the configured base path and repo name", async () => {
+          mockExecAsync
+            .mockResolvedValueOnce({ stdout: "", stderr: "" }) // listWorkTrees returns empty
+            .mockResolvedValueOnce({ stdout: "commit-hash", stderr: "" }) // gitHasCommits
+            .mockResolvedValueOnce({ stdout: "", stderr: "" }) // gitBranchExists
+            .mockResolvedValueOnce({ stdout: "", stderr: "" }) // gitCreateBranch
+            .mockResolvedValueOnce({ stdout: "success", stderr: "" }); // gitWorktreeAdd
+
+          const result = await createWorkTree(
+            "test",
+            "main",
+            undefined,
+            undefined,
+            "/custom/worktrees",
+          );
+
+          expect(result.path).toBe("/custom/worktrees/repo/test");
         });
 
         it("should generate unique ID for work tree", async () => {

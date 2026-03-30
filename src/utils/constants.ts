@@ -54,7 +54,8 @@ export function getGlobalConfig(): GlobalConfig {
 
   // Default base worktrees path: ~/.gwtree/worktrees
   const baseWorktreesPath =
-    process.env.BASE_WORKTREES_PATH || path.join(homeDir, ".gwtree");
+    process.env.BASE_WORKTREES_PATH ||
+    path.join(homeDir, ".gwtree", "worktrees");
 
   // Custom project directories (colon-separated)
   const projectDirectories =
@@ -64,4 +65,16 @@ export function getGlobalConfig(): GlobalConfig {
     baseWorktreesPath,
     projectDirectories,
   };
+}
+
+export function resolveConfiguredPath(configuredPath: string): string {
+  if (configuredPath === "~") {
+    return os.homedir();
+  }
+
+  if (configuredPath.startsWith("~/")) {
+    return path.join(os.homedir(), configuredPath.slice(2));
+  }
+
+  return path.resolve(configuredPath);
 }

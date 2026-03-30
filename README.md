@@ -150,6 +150,7 @@ Optionally, configure the worktrees folder and project directories using environ
 ```bash
 # Storage directory for worktrees
 # Default: ~/.gwtree/worktrees
+# Worktrees are created under: <base>/<repo-name>/<worktree-name>
 export BASE_WORKTREES_PATH=~/my-custom-worktrees
 
 # Custom project directories for discovery (colon-separated)
